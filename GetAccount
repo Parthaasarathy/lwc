@@ -1,1 +1,140 @@
 
+public with sharing class AccountDataController {
+    @AuraEnabled(cacheable=true)
+    public static List<Account> getAccounts(Integer pageSize, Integer pageNumber, String searchKey, String sortBy, String sortDirection) {
+        // Build the SOQL query based on input parameters
+        String query = 'SELECT Id, Name, Type, Phone FROM Account WHERE Name LIKE :('%' + searchKey + '%') OR Type LIKE :('%' + searchKey + '%') OR Phone LIKE :('%' + searchKey + '%')';
+
+        // Add sorting
+        if (sortBy != null && sortDirection != null) {
+            query += ' ORDER BY ' + sortBy + ' ' + sortDirection;
+        }
+
+        // Implement pagination
+        Integer offsetSize = (pageNumber - 1) * pageSize;
+        query += ' LIMIT :pageSize OFFSET :offsetSize';
+
+        return Database.query(query);
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static Integer getTotalRecords(String searchKey) {
+        // Count total records for pagination
+        return [SELECT COUNT() FROM Account WHERE Name LIKE :('%' + searchKey + '%') OR Type LIKE :('%' + searchKey + '%') OR Phone LIKE :('%' + searchKey + '%')];
+    }
+}
+
+
+
+import { LightningElement, track, wire } from 'lwc';
+import getAccounts from '@salesforce/apex/AccountDataController.getAccounts';
+import getTotalRecords from '@salesforce/apex/AccountDataController.getTotalRecords';
+
+export default class AccountDataTable extends LightningElement {
+    @track data = [];
+    @track columns = [
+        { label: 'Account Name', fieldName: 'Name', sortable: true },
+        { label: 'Type', fieldName: 'Type', sortable: true },
+        { label: 'Phone', fieldName: 'Phone', sortable: true },
+    ];
+    @track pageSize = 10;
+    @track pageNumber = 1;
+    @track totalRecords;
+    @track totalPages;
+    @track searchKey = '';
+    @track sortBy;
+    @track sortDirection;
+
+    connectedCallback() {
+        this.loadAccounts();
+    }
+
+    loadAccounts() {
+        getAccounts({ 
+            pageSize: this.pageSize, 
+            pageNumber: this.pageNumber, 
+            searchKey: this.searchKey, 
+            sortBy: this.sortBy, 
+            sortDirection: this.sortDirection 
+        })
+        .then(result => {
+            this.data = result;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+        getTotalRecords({ searchKey: this.searchKey })
+        .then(result => {
+            this.totalRecords = result;
+            this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }
+
+    handleSearch(event) {
+        this.searchKey = event.target.value;
+        this.pageNumber = 1;
+        this.loadAccounts();
+    }
+
+    handleSort(event) {
+        this.sortBy = event.detail.fieldName;
+        this.sortDirection = event.detail.sortDirection;
+        this.loadAccounts();
+    }
+
+    handleNextPage() {
+        if (this.pageNumber < this.totalPages) {
+            this.pageNumber++;
+            this.loadAccounts();
+        }
+    }
+
+    handlePreviousPage() {
+        if (this.pageNumber > 1) {
+            this.pageNumber--;
+            this.loadAccounts();
+        }
+    }
+}
+
+
+
+<template>
+    <lightning-card title="Account Data Table">
+        <!-- Search Input -->
+        <div class="slds-p-horizontal_small">
+            <lightning-input type="search" label="Search" onchange={handleSearch}></lightning-input>
+        </div>
+
+        <!-- Data Table -->
+        <lightning-datatable
+            key-field="Id"
+            data={data}
+            columns={columns}
+            onsort={handleSort}
+            sorted-by={sortBy}
+            sorted-direction={sortDirection}>
+        </lightning-datatable>
+
+        <!-- Pagination Controls -->
+        <div class="slds-m-top_medium slds-text-align_center">
+            <lightning-button label="Previous" onclick={handlePreviousPage} disabled={pageNumber === 1}></lightning-button>
+            <span>Page {pageNumber} of {totalPages}</span>
+            <lightning-button label="Next" onclick={handleNextPage} disabled={pageNumber === totalPages}></lightning-button>
+        </div>
+    </lightning-card>
+</template>
+
+
+
+.slds-p-horizontal_small {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+.slds-m-top_medium {
+    margin-top: 1rem;
+}
