@@ -2,25 +2,36 @@
 public with sharing class AccountDataController {
     @AuraEnabled(cacheable=true)
     public static List<Account> getAccounts(Integer pageSize, Integer pageNumber, String searchKey, String sortBy, String sortDirection) {
-        // Build the SOQL query based on input parameters
-        String query = 'SELECT Id, Name, Type, Phone FROM Account WHERE Name LIKE :('%' + searchKey + '%') OR Type LIKE :('%' + searchKey + '%') OR Phone LIKE :('%' + searchKey + '%')';
+        // Start the query with basic SELECT statement
+        String query = 'SELECT Id, Name, Type, Phone FROM Account';
 
-        // Add sorting
+        // Apply search filter if searchKey is provided
+        if (searchKey != null && searchKey != '') {
+            query += ' WHERE Name LIKE \'%' + searchKey + '%\' OR Type LIKE \'%' + searchKey + '%\' OR Phone LIKE \'%' + searchKey + '%\'';
+        }
+
+        // Add sorting if provided
         if (sortBy != null && sortDirection != null) {
             query += ' ORDER BY ' + sortBy + ' ' + sortDirection;
         }
 
-        // Implement pagination
+        // Calculate the offset for pagination
         Integer offsetSize = (pageNumber - 1) * pageSize;
-        query += ' LIMIT :pageSize OFFSET :offsetSize';
+        query += ' LIMIT ' + pageSize + ' OFFSET ' + offsetSize;
 
+        // Execute the query and return the results
         return Database.query(query);
     }
 
     @AuraEnabled(cacheable=true)
     public static Integer getTotalRecords(String searchKey) {
-        // Count total records for pagination
-        return [SELECT COUNT() FROM Account WHERE Name LIKE :('%' + searchKey + '%') OR Type LIKE :('%' + searchKey + '%') OR Phone LIKE :('%' + searchKey + '%')];
+        String query = 'SELECT COUNT() FROM Account';
+
+        if (searchKey != null && searchKey != '') {
+            query += ' WHERE Name LIKE \'%' + searchKey + '%\' OR Type LIKE \'%' + searchKey + '%\' OR Phone LIKE \'%' + searchKey + '%\'';
+        }
+
+        return (Integer) Database.query(query)[0].get('expr0');
     }
 }
 
