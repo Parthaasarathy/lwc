@@ -113,4 +113,180 @@ Day-to-day activities for managing Leads typically include tracking lead statuse
 
 
 
+Here are detailed responses to the additional questions in the image to help you excel in your interview:
+
+Technical Salesforce Questions
+
+1. Test Coverage Standards
+
+Salesforce requires at least 75% code coverage for deployment to production, meaning 75% of Apex code must be covered by tests. However, aiming for 90-95% is a best practice to ensure high-quality, reliable code, especially for critical business logic.
+
+
+
+2. Any Test Case Failures during Deployments? If yes, how are they handled?
+
+If test cases fail during deployment, I first check the error messages to identify if they’re due to dependency issues, governor limits, or code logic errors. I then debug by using Salesforce’s Developer Console and modify the test data or logic as needed to ensure robust, passing test cases before re-deploying.
+
+
+
+3. Trigger Best Practices
+
+Best practices include:
+
+Using only one trigger per object to avoid logic conflicts.
+
+Keeping logic in a handler class and using triggers only for orchestration.
+
+Avoiding recursive calls by using static variables.
+
+Following order of execution and avoiding SOQL/DML operations inside loops to prevent governor limits.
+
+
+
+
+4. What is Apex Action and what do you do with Apex Actions?
+
+Apex actions are methods in Apex classes that can be invoked by Lightning components and flows. They are used to handle complex business logic that requires server-side processing, allowing components to offload heavy operations to the backend.
+
+
+
+5. Asynchronous Apex and why are they used?
+
+Asynchronous Apex (like Future Methods, Batch Apex, Queueable Apex, and Scheduled Apex) handles operations that are resource-intensive or need to run independently of the current transaction. They are used for tasks such as processing large datasets, making callouts to external services, and improving system performance by deferring certain operations.
+
+
+
+6. What are Apex Job Queues?
+
+Apex Job Queues manage asynchronous operations, allowing Salesforce to queue and execute asynchronous Apex requests like batch and scheduled jobs. They ensure that these jobs are handled systematically, avoiding conflicts and optimizing resource usage.
+
+
+
+7. How do you schedule Apex Jobs?
+
+Apex jobs can be scheduled using the System.schedule method, where you specify the job name, a CRON expression for timing, and an instance of the Schedulable class. Alternatively, the Setup UI provides a point-and-click interface to schedule these jobs without coding.
+
+
+
+8. How do you set up security for Apex Class?
+
+Security is enforced by declaring Apex classes as with sharing or without sharing to respect or bypass sharing rules. Additionally, field- and object-level security can be enforced using Schema methods or checking permissions programmatically to ensure secure data access.
+
+
+
+9. Code - Flow / Process Builder / Trigger, what would you choose and why?
+
+The choice depends on complexity and need:
+
+Flows for complex, declarative automation and interactive screens.
+
+Process Builder for simple, declarative workflows with limited branching.
+
+Triggers for advanced, complex, and conditional automation beyond what Flow and Process Builder can handle, especially if it requires server-side logic.
+
+
+
+
+10. How many flows are recommended for an object in Salesforce?
+
+It’s recommended to have only one record-triggered flow per object per trigger context (create, update, delete) to simplify management and avoid conflicts. However, complex cases may require multiple flows if carefully orchestrated.
+
+
+
+11. Triggers - How many triggers can be used for an object?
+
+Only one trigger per object is recommended, though multiple can technically exist. Using one trigger simplifies maintenance and helps avoid recursive loops or logic conflicts.
+
+
+
+12. Coding practice to have good high test coverage?
+
+To ensure high test coverage:
+
+Write unit tests covering all paths and edge cases.
+
+Use System.assert statements to verify outcomes.
+
+Avoid relying on hardcoded IDs; use dynamic test data instead.
+
+Write tests for both positive and negative scenarios, and cover all branches.
+
+
+
+
+13. How do you review your code to make it quality code?
+
+Code quality review involves checking for:
+
+Proper use of naming conventions.
+
+Adherence to best practices (e.g., avoiding SOQL in loops).
+
+Code readability, modularization, and reusability.
+
+Performance optimization, especially for bulk processing.
+
+Ensuring secure data access by enforcing sharing rules.
+
+
+
+
+14. Did you work on any limitation errors to avoid governor limits during the experience?
+
+Yes, common strategies include:
+
+Bulkifying code by processing records in collections.
+
+Using asynchronous Apex for long-running processes.
+
+Caching data and avoiding unnecessary SOQL queries in loops.
+
+Utilizing query limits and handling recursive triggers with static variables.
+
+
+
+
+15. If we have multiple criteria in a flow, how do you do it?
+
+Multiple criteria in a flow can be managed using decision elements to branch logic based on conditions. Nested decision elements can handle complex criteria, and formula fields within the flow can be used for advanced logic.
+
+
+
+16. There is a code that is causing the processing limits (Governor limit problem), how would these limits be avoided?
+
+To avoid governor limits:
+
+Optimize SOQL queries by using LIMIT and filtering unnecessary data.
+
+Avoid SOQL/DML in loops; batch DML operations instead.
+
+Use collections like maps and sets to manage data in bulk.
+
+Consider asynchronous processing (e.g., Batch Apex, Future Methods) for resource-intensive operations.
+
+
+
+
+17. What are Future Methods?
+
+Future Methods are asynchronous Apex methods marked with @future. They run in the background and are useful for callouts to external systems or offloading tasks that do not need to complete immediately. They help reduce processing time and avoid hitting limits in synchronous transactions.
+
+
+
+18. What migration tools have been used during the experience, Any idea on ANT tool?
+
+Salesforce offers several migration tools, including:
+
+Change Sets for straightforward, declarative migrations between connected environments.
+
+Salesforce CLI (sfdx) for scripted deployments.
+
+ANT Migration Tool, which is based on Apache ANT and provides flexibility for deployments, especially in CI/CD pipelines, allowing automated pushes and pulls between orgs.
+
+
+
+
+
+
+
 
