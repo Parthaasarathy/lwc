@@ -1,0 +1,116 @@
+I'll help you craft concise, impressive responses to each question to stand out in your interview. Here are suggested answers to the questions in the image:
+
+Lightning Related Questions
+
+1. Any Lightning Upgrade?
+
+Lightning is continuously upgraded by Salesforce with improvements in performance, new components, and enhanced developer tools. Key recent upgrades include advanced Einstein AI integrations, Lightning Web Security for improved security, and enhancements in Dynamic Forms and Actions to provide users more flexibility and customization.
+
+
+
+2. What is LDS (Lightning Data Service) and what does it do?
+
+LDS is a data layer in Lightning that allows developers to handle record data without Apex code. It provides a declarative approach for CRUD operations, which enhances efficiency by caching data, thus minimizing server requests and improving performance. LDS ensures data consistency across components, making it ideal for building efficient, interactive Lightning components.
+
+
+
+3. Having LDS benefits LWC?
+
+Yes, LDS is highly beneficial for LWC as it enables components to access and manage records declaratively, improving load times, reducing server calls, and simplifying data handling. It also manages record sharing and security automatically, reducing the complexity of coding security from scratch.
+
+
+
+4. LMS (Lightning Message Service)
+
+LMS is a framework for cross-component communication in Lightning. It allows Aura and LWC components to communicate seamlessly within a single page or app, even across different DOM hierarchies. LMS improves modularity and flexibility, especially in complex applications where components need to share data or react to each other's changes.
+
+
+
+5. What is Lightning Data Service?
+
+Lightning Data Service is a standard service for loading, saving, and creating records in Lightning Experience. Similar to a client-side cache, it minimizes the number of server requests and improves the speed and reliability of data operations. LDS automatically handles security and sharing, making it efficient for managing Salesforce data.
+
+
+
+6. Aura and LWC difference?
+
+Aura Components are the older framework in Salesforce's UI layer, offering component-based development, but with more boilerplate code. LWC (Lightning Web Components) is newer and leverages native web standards, resulting in better performance, lighter components, and simpler code. LWC is more modern, aligns with standard JavaScript, and is generally recommended for new development.
+
+
+
+7. Performance - who were they fixed during the experience?
+
+Performance improvements in Lightning are achieved through various techniques, such as lazy loading, using LDS for efficient data caching, optimizing component load time, and leveraging the latest LWC framework improvements. Salesforce regularly updates Lightning to reduce client-side rendering issues and optimize backend efficiency.
+
+
+
+8. Any difference between OmniScript and LWC in terms of functionality?
+
+OmniScript is part of Salesforce Industries (Vlocity) and is designed for complex, guided workflows. It’s a declarative tool to build customizable, industry-specific flows without coding. LWC, on the other hand, is a web component framework that enables custom front-end development. OmniScript is more suited for industry-specific guided flows, while LWC offers broader flexibility for general web development.
+
+
+
+9. What is DOM and Shadow DOM?
+
+The DOM (Document Object Model) is a tree structure representing a web page's elements. Shadow DOM is a part of the Web Components standard, encapsulating a component’s DOM to prevent style and script conflicts. In LWC, Shadow DOM ensures component styles are scoped locally, enhancing modularity and preventing unintended CSS leakage.
+
+
+
+10. LWC lifecycle hooks?
+
+LWC has several lifecycle hooks for managing component behavior:
+
+connectedCallback() – Executes when the component is inserted into the DOM.
+
+disconnectedCallback() – Fires when the component is removed from the DOM.
+
+renderedCallback() – Runs after every render of the component.
+
+errorCallback(error, stack) – Captures errors in descendant components.
+
+
+
+
+11. How to communicate and pass information between 2 LWCs?
+
+Communication between two LWCs can be achieved using:
+
+Public properties for parent-to-child communication.
+
+Custom events for child-to-parent communication.
+
+Lightning Message Service (LMS) for sibling or cross-DOM communication.
+
+Pub-Sub model for component communication within a single page.
+
+
+
+
+12. LWC Best Practices?
+
+Follow best practices such as:
+
+Keeping components modular and focused on a single task.
+
+Using LDS to handle data operations efficiently.
+
+Leveraging Shadow DOM for encapsulated styling.
+
+Avoiding complex JavaScript logic in templates.
+
+Using reactive properties and decorators (@api, @track, @wire) wisely for performance and clarity.
+
+
+
+
+
+Apex and Flows Related Questions
+
+1. Lead - what is the day in / out activities?
+
+Day-to-day activities for managing Leads typically include tracking lead statuses, nurturing and qualifying leads through automated workflows, analyzing lead sources, and ensuring follow-up tasks. Flows and Process Builder can automate routine actions such as assignment, qualification scoring, and notifications, allowing for efficient lead management.
+
+
+
+
+
