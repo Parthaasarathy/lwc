@@ -285,6 +285,170 @@ ANT Migration Tool, which is based on Apache ANT and provides flexibility for de
 
 
 
+Here are comprehensive responses to the integration and Agile-related questions from your image:
+
+Integration Related Questions
+
+1. What kind of Integrations were performed during the experience?
+
+I worked on multiple types of integrations, including real-time integrations using REST and SOAP APIs for data synchronization between Salesforce and external systems. I also utilized Platform Events for event-driven architectures and Outbound Messages for simpler data updates triggered by workflow rules. These integrations facilitated seamless data flow and ensured consistency across systems.
+
+
+
+2. Where did you send the Outbound messages to? Example: Any out-of-the-box functionality used for outbound messages (Any customization done)?
+
+Outbound Messages were configured to send data to external systems like ERP or inventory management systems. I leveraged Salesforce’s native workflow-based outbound messaging, which allowed data updates upon specified criteria. For complex use cases, I customized message formats and incorporated additional data processing in the receiving system.
+
+
+
+3. What is Composite API?
+
+The Composite API is a Salesforce REST API that allows multiple requests to be combined into a single call. It enables developers to execute a series of dependent operations, such as creating and updating related records, in a single transaction, which improves performance and reduces API calls. It’s particularly useful for maintaining data integrity across multiple related objects.
+
+
+
+4. Worked on publishing the data to external systems?
+
+Yes, I have worked on publishing data using outbound messaging and Platform Events. Outbound messaging enabled reliable delivery to external endpoints, while Platform Events allowed real-time, event-driven communication with external systems, ensuring that they received updates immediately as events were triggered in Salesforce.
+
+
+
+5. Sales Cloud - Challenge: Sending data to an outbound messaging system using SOAP integration, which is a limitation currently in Salesforce (SOAP authentication is not accepted), how do you resolve this issue?
+
+If SOAP authentication is not accepted, a possible solution is to use a middleware platform like MuleSoft or an API Gateway that can accept SOAP requests and handle authentication, then convert these requests to REST for Salesforce. This allows secure and authenticated data flow without modifying the SOAP-based external system.
+
+
+
+6. Outbound messages can be dealt using REST API or no?
+
+Outbound messages in Salesforce are typically SOAP-based and configured as part of workflow rules. However, REST API can achieve similar functionality by calling external services through HttpRequest in Apex. For greater flexibility, REST-based integration can be implemented directly in Apex to send custom payloads to external endpoints.
+
+
+
+
+Agile Related Questions
+
+1. What is Agile?
+
+Agile is a project management and product development approach based on iterative progress, collaboration, and flexibility. It emphasizes delivering small, functional increments rather than a complete product at once, allowing for regular feedback, adaptability, and continuous improvement.
+
+
+
+2. How Agile works and explain at high level?
+
+Agile operates through iterative cycles, often called sprints, which last 1-4 weeks. Each sprint involves planning, development, testing, and review phases to deliver a potentially shippable increment of the product. Agile emphasizes collaboration between cross-functional teams and regular stakeholder feedback to adjust and improve the product continually.
+
+
+
+3. Have you ever been involved in sizing of the story? How does that work?
+
+Yes, I have been involved in story sizing using techniques like planning poker. Sizing involves estimating the effort required for each user story, usually in story points based on complexity and effort. This helps the team gauge workload, prioritize tasks, and plan sprints realistically.
+
+
+
+Here are responses to the Velocity (Salesforce Industries) and Config-related questions to help you prepare:
+
+Velocity Related Questions
+
+1. Data Raptors in Sales Cloud used?
+
+DataRaptors in Salesforce Industries (Velocity) are used to extract, transform, and load data from Salesforce objects. They can perform data operations like retrieving records, transforming data formats, and updating records within Sales Cloud, enabling efficient data processing for custom applications and integrations.
+
+
+
+2. OMNI Studio - Salesforce to Other Systems Sync Up?
+
+OmniStudio in Salesforce Industries offers tools like Integration Procedures and DataRaptors that facilitate syncing data between Salesforce and other systems. Integration Procedures can call external APIs to retrieve or send data, enabling real-time data exchange and maintaining data consistency across systems.
+
+
+
+3. What Flows and Business Implemented During Velocity Experience?
+
+In Velocity, OmniScripts are used to build guided flows that handle various business processes, such as customer onboarding, case management, and order processing. OmniScripts provide a step-by-step interface for users, while FlexCards and Integration Procedures are used to fetch, display, and manage data across steps in real-time.
+
+
+
+4. Sales Cloud - If I have additional license, will I be able to make an outbound call using Data Raptor?
+
+DataRaptors themselves are primarily designed for internal data operations within Salesforce. For outbound calls, you typically use Integration Procedures, which can call external APIs if the necessary Salesforce Industries (Velocity) licenses and permissions are in place.
+
+
+
+5. Sales Cloud - If I have additional license, will I be able to make an outbound call using Data Raptor? (Repeated Question)
+
+As above, DataRaptors handle data transformations within Salesforce. Outbound data calls should utilize Integration Procedures, which allow interaction with external systems through REST and SOAP APIs when an additional license supports these capabilities.
+
+
+
+
+Config Related Questions
+
+1. Did you use Permission Sets?
+
+Yes, Permission Sets are essential for managing user access to specific objects, fields, and features without changing their profiles. They allow for flexible permission management, making it easy to grant additional access to individual users or groups without modifying roles or profiles.
+
+
+
+2. Define Role Security. I have an object that had users and their manager, how do you define security to make a role hierarchy?
+
+Role security in Salesforce is structured in a hierarchy where higher roles (like managers) inherit access to records owned by users in lower roles. For an object with users and managers, the role hierarchy allows managers to access their team members' records automatically, supporting both visibility and control based on organizational structure.
+
+
+
+3. What is the sharing rule different from permission set?
+
+Sharing rules extend access to records based on ownership or criteria, allowing broader access at the record level, beyond what role hierarchy permits. Permission Sets, on the other hand, control access at the object and field level and don’t automatically grant access to individual records.
+
+
+
+4. What instances worked in Salesforce?
+
+Salesforce instances refer to the specific servers where Salesforce orgs are hosted, such as NA, EU, or AP instances based on geographic regions. These instances ensure data localization and optimize performance for users in specific regions.
+
+
+
+Here are responses to the final set of questions from the image:
+
+General Salesforce and Career Questions
+
+1. What is the mechanism behind the scenes to have the UI refresh happening seamlessly in Salesforce?
+
+In Salesforce, seamless UI refresh is achieved through a combination of technologies like Lightning Data Service (LDS) and real-time push updates. LDS caches data on the client side, reducing the need for repeated server calls and ensuring fast data updates. Real-time updates can be achieved using Platform Events or Streaming API, which automatically push changes to users’ screens without manual refreshes, ensuring the UI stays up-to-date.
+
+
+
+2. What are you looking for in the next few years in your career?
+
+In the next few years, I aim to deepen my expertise in Salesforce development and architecture, focusing on advanced integrations and scalable solutions. I am particularly interested in exploring areas like AI-driven insights, enhancing customer experience, and gaining more experience in leading projects. I also plan to pursue certifications to strengthen my technical skills and contribute to high-impact projects within my organization.
+
+
+
+3. Deployment process and tools used during the experience?
+
+I have used various deployment tools, including Change Sets for simple deployments between sandbox and production, Salesforce CLI (sfdx) for more complex deployments, and ANT Migration Tool for automated and CI/CD deployments. Additionally, GitHub was used for version control and collaborative development, ensuring all code changes are tracked and that we can revert if needed.
+
+
+
+4. ANT tool scripting and GitHub?
+
+ANT tool scripting is used in Salesforce for automating deployments. It allows us to create XML-based scripts that specify components to be deployed and manage deployments efficiently. GitHub complements this by serving as a version control system, enabling collaboration among developers, tracking changes, and supporting pull requests and code reviews for a controlled and traceable development process.
+
+
+
+5. DataLoader CLI?
+
+DataLoader CLI is a command-line version of Salesforce Data Loader, which allows for bulk data import, update, delete, and export operations directly from the command line. It is useful for automating data operations through scripts, enabling scheduled or repetitive tasks without manual intervention.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
