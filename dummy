@@ -1,59 +1,7 @@
-public with sharing class AccountManagerController {
-    @AuraEnabled(cacheable=true)
-    public static List<Account> getAccounts(String searchKey, String industryFilter) {
-        String searchKeyLike = '%' + searchKey + '%';
-        String query = 'SELECT Id, Name, Industry, AnnualRevenue, Phone FROM Account WHERE (Name LIKE :searchKeyLike OR Phone LIKE :searchKeyLike) AND IsDeleted = false';
-
-        if (industryFilter != 'All' && industryFilter != null) {
-            query += ' AND Industry = :industryFilter';
-        }
-
-        return Database.query(query);
-    }
-
-    @AuraEnabled
-    public static void updateAccount(Account accountToUpdate) {
-        update accountToUpdate;
-    }
-}
-
-<template>
-    <lightning-card title="Account Management" icon-name="standard:account">
-        <!-- Search Box -->
-        <lightning-input type="text" label="Search" value={searchKey} onchange={handleSearchChange}></lightning-input>
-
-        <!-- Industry Filter -->
-        <lightning-combobox
-            label="Filter by Industry"
-            value={selectedIndustry}
-            placeholder="Select Industry"
-            options={industryOptions}
-            onchange={handleIndustryChange}>
-        </lightning-combobox>
-
-        <!-- Data Table -->
-        <lightning-datatable
-            key-field="Id"
-            data={accounts}
-            columns={columns}
-            hide-checkbox-column
-            onsave={handleSave}>
-        </lightning-datatable>
-
-        <!-- Notification Messages -->
-        <template if:true={notificationMessage}>
-            <div class="slds-m-top_medium">
-                <lightning-formatted-text value={notificationMessage}></lightning-formatted-text>
-            </div>
-        </template>
-    </lightning-card>
-</template>
-
-
-
 import { LightningElement, track, wire } from 'lwc';
 import getAccounts from '@salesforce/apex/AccountManagerController.getAccounts';
 import updateAccount from '@salesforce/apex/AccountManagerController.updateAccount';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class AccountManager extends LightningElement {
     @track accounts = [];
@@ -93,19 +41,62 @@ export default class AccountManager extends LightningElement {
         this.selectedIndustry = event.target.value;
     }
 
-    handleSave(event) {
-        const fields = event.detail.draftValues[0];
-        updateAccount({ accountToUpdate: fields })
-            .then(() => {
-                this.notificationMessage = 'Account updated successfully!';
-                this.searchKey = ''; // Clear search for a refresh effect
-                return refreshApex(this.wiredAccounts);
-            })
-            .catch(() => {
-                this.notificationMessage = 'Error updating account.';
-            });
+    async handleSave(event) {
+        const updatedFields = event.detail.draftValues;
+
+        try {
+            // Call Apex method to update the account
+            await updateAccount({ accountsToUpdate: updatedFields });
+
+            // Show success notification
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Success',
+                    message: 'Account(s) updated successfully!',
+                    variant: 'success'
+                })
+            );
+
+            // Clear the draft values and refresh data
+            this.template.querySelector('lightning-datatable').draftValues = [];
+            return refreshApex(this.wiredAccounts);
+        } catch (error) {
+            // Show error notification
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Error',
+                    message: 'Error updating account(s): ' + error.body.message,
+                    variant: 'error'
+                })
+            );
+        }
     }
 }
 
+public with sharing class AccountManagerController {
+    @AuraEnabled(cacheable=true)
+    public static List<Account> getAccounts(String searchKey, String industryFilter) {
+        String searchKeyLike = '%' + searchKey + '%';
+        String query = 'SELECT Id, Name, Industry, AnnualRevenue, Phone FROM Account WHERE (Name LIKE :searchKeyLike OR Phone LIKE :searchKeyLike) AND IsDeleted = false';
 
+        if (industryFilter != 'All' && industryFilter != null) {
+            query += ' AND Industry = :industryFilter';
+        }
+
+        return Database.query(query);
+    }
+
+    @AuraEnabled
+    public static void updateAccount(List<Account> accountsToUpdate) {
+        if (accountsToUpdate == null || accountsToUpdate.isEmpty()) {
+            throw new AuraHandledException('No accounts provided for update.');
+        }
+
+        try {
+            update accountsToUpdate;
+        } catch (Exception e) {
+            throw new AuraHandledException('Failed to update accounts: ' + e.getMessage());
+        }
+    }
+}
 
