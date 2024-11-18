@@ -1,21 +1,114 @@
-Account Management
-Goal: Build a Lightning Web Component (LWC) that displays and allows editing of Account records in a table format.
-Features to Include:
-Display Account Records:
-Show a table with Account records, including these fields:
-Name
-Industry
-Annual Revenue
-Phone
-Inline Editing:
-Allow users to edit the Industry and Annual Revenue fields directly in the table.
-Save the changes to Salesforce when a user clicks out of the cell after editing.
-Show a small indicator (e.g., checkmark or spinner) to confirm the save was successful.
-Search Functionality:
-Add a search box at the top to let users search by Account Name or Phone.
-Filter by Industry:
-Include a dropdown at the top to filter the list of accounts by Industry.
-The filter should update the table without needing to reload the entire page.
-Status Notifications:
-Show a message if a change is saved successfully or if there is an error during the save.
-Make the messages clear and easy to understand.
+public with sharing class AccountManagerController {
+    @AuraEnabled(cacheable=true)
+    public static List<Account> getAccounts(String searchKey, String industryFilter) {
+        String searchKeyLike = '%' + searchKey + '%';
+        String industryFilterQuery = industryFilter == 'All' || industryFilter == null ? '' : 'AND Industry = :industryFilter';
+        return [
+            SELECT Id, Name, Industry, AnnualRevenue, Phone
+            FROM Account
+            WHERE (Name LIKE :searchKeyLike OR Phone LIKE :searchKeyLike) 
+            AND IsDeleted = false
+            {0}
+        ]
+        .replace('{0}', industryFilterQuery)
+        .limit(100);
+    }
+
+    @AuraEnabled
+    public static void updateAccount(Account accountToUpdate) {
+        update accountToUpdate;
+    }
+}
+
+<template>
+    <lightning-card title="Account Management" icon-name="standard:account">
+        <!-- Search Box -->
+        <lightning-input type="text" label="Search" value={searchKey} onchange={handleSearchChange}></lightning-input>
+
+        <!-- Industry Filter -->
+        <lightning-combobox
+            label="Filter by Industry"
+            value={selectedIndustry}
+            placeholder="Select Industry"
+            options={industryOptions}
+            onchange={handleIndustryChange}>
+        </lightning-combobox>
+
+        <!-- Data Table -->
+        <lightning-datatable
+            key-field="Id"
+            data={accounts}
+            columns={columns}
+            hide-checkbox-column
+            onsave={handleSave}>
+        </lightning-datatable>
+
+        <!-- Notification Messages -->
+        <template if:true={notificationMessage}>
+            <div class="slds-m-top_medium">
+                <lightning-formatted-text value={notificationMessage}></lightning-formatted-text>
+            </div>
+        </template>
+    </lightning-card>
+</template>
+
+
+
+import { LightningElement, track, wire } from 'lwc';
+import getAccounts from '@salesforce/apex/AccountManagerController.getAccounts';
+import updateAccount from '@salesforce/apex/AccountManagerController.updateAccount';
+
+export default class AccountManager extends LightningElement {
+    @track accounts = [];
+    @track searchKey = '';
+    @track selectedIndustry = 'All';
+    @track notificationMessage = '';
+
+    industryOptions = [
+        { label: 'All', value: 'All' },
+        { label: 'Agriculture', value: 'Agriculture' },
+        { label: 'Banking', value: 'Banking' },
+        { label: 'Consulting', value: 'Consulting' },
+        { label: 'Technology', value: 'Technology' },
+    ];
+
+    columns = [
+        { label: 'Name', fieldName: 'Name' },
+        { label: 'Phone', fieldName: 'Phone' },
+        { label: 'Industry', fieldName: 'Industry', editable: true },
+        { label: 'Annual Revenue', fieldName: 'AnnualRevenue', type: 'currency', editable: true },
+    ];
+
+    @wire(getAccounts, { searchKey: '$searchKey', industryFilter: '$selectedIndustry' })
+    wiredAccounts({ error, data }) {
+        if (data) {
+            this.accounts = data;
+        } else if (error) {
+            this.notificationMessage = 'Error fetching account records.';
+        }
+    }
+
+    handleSearchChange(event) {
+        this.searchKey = event.target.value;
+    }
+
+    handleIndustryChange(event) {
+        this.selectedIndustry = event.target.value;
+    }
+
+    handleSave(event) {
+        const fields = event.detail.draftValues[0];
+        updateAccount({ accountToUpdate: fields })
+            .then(() => {
+                this.notificationMessage = 'Account updated successfully!';
+                this.searchKey = ''; // Clear search for a refresh effect
+                return refreshApex(this.wiredAccounts);
+            })
+            .catch(() => {
+                this.notificationMessage = 'Error updating account.';
+            });
+    }
+}
+
+
+
