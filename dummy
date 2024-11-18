@@ -2,16 +2,13 @@ public with sharing class AccountManagerController {
     @AuraEnabled(cacheable=true)
     public static List<Account> getAccounts(String searchKey, String industryFilter) {
         String searchKeyLike = '%' + searchKey + '%';
-        String industryFilterQuery = industryFilter == 'All' || industryFilter == null ? '' : 'AND Industry = :industryFilter';
-        return [
-            SELECT Id, Name, Industry, AnnualRevenue, Phone
-            FROM Account
-            WHERE (Name LIKE :searchKeyLike OR Phone LIKE :searchKeyLike) 
-            AND IsDeleted = false
-            {0}
-        ]
-        .replace('{0}', industryFilterQuery)
-        .limit(100);
+        String query = 'SELECT Id, Name, Industry, AnnualRevenue, Phone FROM Account WHERE (Name LIKE :searchKeyLike OR Phone LIKE :searchKeyLike) AND IsDeleted = false';
+
+        if (industryFilter != 'All' && industryFilter != null) {
+            query += ' AND Industry = :industryFilter';
+        }
+
+        return Database.query(query);
     }
 
     @AuraEnabled
