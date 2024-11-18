@@ -45,8 +45,20 @@ export default class AccountManager extends LightningElement {
         const updatedFields = event.detail.draftValues;
 
         try {
-            // Call Apex method to update the account
+            // Call Apex method to update the accounts
             await updateAccount({ accountsToUpdate: updatedFields });
+
+            // Update the local data to reflect the changes immediately
+            updatedFields.forEach((updatedRecord) => {
+                const index = this.accounts.findIndex((account) => account.Id === updatedRecord.Id);
+                if (index !== -1) {
+                    // Merge the updated fields into the original account record
+                    this.accounts[index] = { ...this.accounts[index], ...updatedRecord };
+                }
+            });
+
+            // Clear the draft values in the datatable
+            this.template.querySelector('lightning-datatable').draftValues = [];
 
             // Show success notification
             this.dispatchEvent(
@@ -56,10 +68,6 @@ export default class AccountManager extends LightningElement {
                     variant: 'success'
                 })
             );
-
-            // Clear the draft values and refresh data
-            this.template.querySelector('lightning-datatable').draftValues = [];
-            return refreshApex(this.wiredAccounts);
         } catch (error) {
             // Show error notification
             this.dispatchEvent(
@@ -72,31 +80,3 @@ export default class AccountManager extends LightningElement {
         }
     }
 }
-
-public with sharing class AccountManagerController {
-    @AuraEnabled(cacheable=true)
-    public static List<Account> getAccounts(String searchKey, String industryFilter) {
-        String searchKeyLike = '%' + searchKey + '%';
-        String query = 'SELECT Id, Name, Industry, AnnualRevenue, Phone FROM Account WHERE (Name LIKE :searchKeyLike OR Phone LIKE :searchKeyLike) AND IsDeleted = false';
-
-        if (industryFilter != 'All' && industryFilter != null) {
-            query += ' AND Industry = :industryFilter';
-        }
-
-        return Database.query(query);
-    }
-
-    @AuraEnabled
-    public static void updateAccount(List<Account> accountsToUpdate) {
-        if (accountsToUpdate == null || accountsToUpdate.isEmpty()) {
-            throw new AuraHandledException('No accounts provided for update.');
-        }
-
-        try {
-            update accountsToUpdate;
-        } catch (Exception e) {
-            throw new AuraHandledException('Failed to update accounts: ' + e.getMessage());
-        }
-    }
-}
-
