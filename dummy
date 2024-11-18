@@ -1,0 +1,21 @@
+Account Management
+Goal: Build a Lightning Web Component (LWC) that displays and allows editing of Account records in a table format.
+Features to Include:
+Display Account Records:
+Show a table with Account records, including these fields:
+Name
+Industry
+Annual Revenue
+Phone
+Inline Editing:
+Allow users to edit the Industry and Annual Revenue fields directly in the table.
+Save the changes to Salesforce when a user clicks out of the cell after editing.
+Show a small indicator (e.g., checkmark or spinner) to confirm the save was successful.
+Search Functionality:
+Add a search box at the top to let users search by Account Name or Phone.
+Filter by Industry:
+Include a dropdown at the top to filter the list of accounts by Industry.
+The filter should update the table without needing to reload the entire page.
+Status Notifications:
+Show a message if a change is saved successfully or if there is an error during the save.
+Make the messages clear and easy to understand.
