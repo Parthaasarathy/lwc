@@ -2,12 +2,14 @@ import { LightningElement, track, wire } from 'lwc';
 import getAccounts from '@salesforce/apex/AccountManagerController.getAccounts';
 import updateAccount from '@salesforce/apex/AccountManagerController.updateAccount';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { refreshApex } from '@salesforce/apex';
 
 export default class AccountManager extends LightningElement {
     @track accounts = [];
     @track searchKey = '';
     @track selectedIndustry = 'All';
     @track notificationMessage = '';
+    wiredAccountsResult;
 
     industryOptions = [
         { label: 'All', value: 'All' },
@@ -25,10 +27,11 @@ export default class AccountManager extends LightningElement {
     ];
 
     @wire(getAccounts, { searchKey: '$searchKey', industryFilter: '$selectedIndustry' })
-    wiredAccounts({ error, data }) {
-        if (data) {
-            this.accounts = data;
-        } else if (error) {
+    wiredAccounts(result) {
+        this.wiredAccountsResult = result;
+        if (result.data) {
+            this.accounts = result.data;
+        } else if (result.error) {
             this.notificationMessage = 'Error fetching account records.';
         }
     }
@@ -48,17 +51,11 @@ export default class AccountManager extends LightningElement {
             // Call Apex method to update the accounts
             await updateAccount({ accountsToUpdate: updatedFields });
 
-            // Update the local data to reflect the changes immediately
-            updatedFields.forEach((updatedRecord) => {
-                const index = this.accounts.findIndex((account) => account.Id === updatedRecord.Id);
-                if (index !== -1) {
-                    // Merge the updated fields into the original account record
-                    this.accounts[index] = { ...this.accounts[index], ...updatedRecord };
-                }
-            });
-
             // Clear the draft values in the datatable
             this.template.querySelector('lightning-datatable').draftValues = [];
+
+            // Refresh the Apex data to reflect the changes
+            await refreshApex(this.wiredAccountsResult);
 
             // Show success notification
             this.dispatchEvent(
