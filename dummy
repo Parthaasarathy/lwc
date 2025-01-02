@@ -1,79 +1,75 @@
-import { LightningElement, track, wire } from 'lwc';
-import getAccounts from '@salesforce/apex/AccountManagerController.getAccounts';
-import updateAccount from '@salesforce/apex/AccountManagerController.updateAccount';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { refreshApex } from '@salesforce/apex';
-
-export default class AccountManager extends LightningElement {
-    @track accounts = [];
-    @track searchKey = '';
-    @track selectedIndustry = 'All';
-    @track notificationMessage = '';
-    wiredAccountsResult;
-
-    industryOptions = [
-        { label: 'All', value: 'All' },
-        { label: 'Agriculture', value: 'Agriculture' },
-        { label: 'Banking', value: 'Banking' },
-        { label: 'Consulting', value: 'Consulting' },
-        { label: 'Technology', value: 'Technology' },
-    ];
-
-    columns = [
-        { label: 'Name', fieldName: 'Name' },
-        { label: 'Phone', fieldName: 'Phone' },
-        { label: 'Industry', fieldName: 'Industry', editable: true },
-        { label: 'Annual Revenue', fieldName: 'AnnualRevenue', type: 'currency', editable: true },
-    ];
-
-    @wire(getAccounts, { searchKey: '$searchKey', industryFilter: '$selectedIndustry' })
-    wiredAccounts(result) {
-        this.wiredAccountsResult = result;
-        if (result.data) {
-            this.accounts = result.data;
-        } else if (result.error) {
-            this.notificationMessage = 'Error fetching account records.';
-        }
-    }
-
-    handleSearchChange(event) {
-        this.searchKey = event.target.value;
-    }
-
-    handleIndustryChange(event) {
-        this.selectedIndustry = event.target.value;
-    }
-
-    async handleSave(event) {
-        const updatedFields = event.detail.draftValues;
-
-        try {
-            // Call Apex method to update the accounts
-            await updateAccount({ accountsToUpdate: updatedFields });
-
-            // Clear the draft values in the datatable
-            this.template.querySelector('lightning-datatable').draftValues = [];
-
-            // Refresh the Apex data to reflect the changes
-            await refreshApex(this.wiredAccountsResult);
-
-            // Show success notification
-            this.dispatchEvent(
-                new ShowToastEvent({
-                    title: 'Success',
-                    message: 'Account(s) updated successfully!',
-                    variant: 'success'
-                })
-            );
-        } catch (error) {
-            // Show error notification
-            this.dispatchEvent(
-                new ShowToastEvent({
-                    title: 'Error',
-                    message: 'Error updating account(s): ' + error.body.message,
-                    variant: 'error'
-                })
-            );
-        }
-    }
-}
+Use Case: General Healthcare + Patient Lifestyle Marketplace Integration
+1. Objective:
+Build a comprehensive healthcare and lifestyle management platform using Salesforce Health Cloud and OmniStudio to offer integrated solutions for clinical healthcare and lifestyle wellness services.
+ 
+2. Background Problem:
+Traditional healthcare focuses primarily on reactive treatments rather than preventive care.
+Patients lack an integrated platform that connects clinical healthcare services (appointments, treatments, and EHR) with wellness services (fitness programs, diet plans, mental health counseling).
+Service recommendations are often generic and not tailored to individual health conditions or goals.
+Providers lack visibility into patients' engagement with lifestyle services, limiting their ability to offer holistic care.
+3. Proposed Solution:
+A. General Healthcare Module:
+Manage Appointments: Patients can book, reschedule, and cancel appointments with healthcare professionals.
+EHR Integration: Access to patient medical records, test results, and treatment history.
+Care Plans: Personalized care plans tailored to each patient's health conditions.
+Telehealth Integration: Enable virtual consultations with healthcare providers.
+B. Lifestyle Marketplace Module:
+Service Discovery: Patients can browse and book wellness services like yoga classes, nutrition counseling, or gym memberships.
+Personalized Recommendations: Service suggestions based on patient health data (e.g., recommending stress management services for anxiety patients).
+Booking & Payments: Integration with third-party platforms and payment gateways for seamless transactions.
+Feedback Mechanism: Patients can provide ratings and feedback for wellness services.
+Provider Dashboard: Healthcare professionals can monitor patient engagement with wellness services and track outcomes.
+4. User Stories:
+A. As a Patient:
+Healthcare Services: I want to book doctor appointments, view my medical history, and consult via telehealth.
+Wellness Services: I want to browse wellness services tailored to my health goals and book them seamlessly.
+Feedback: I want to rate and review services I used to help others make informed decisions.
+B. As a Healthcare Provider:
+Patient Insights: I want visibility into my patient's engagement with wellness services.
+Recommendations: I want to suggest lifestyle programs that complement their medical care plans.
+Monitoring: I want to track how wellness activities impact patient health outcomes.
+C. As an Admin:
+Partnership Management: I want to manage partnerships with wellness providers.
+Offer Management: I want to create and monitor exclusive discounts and promotions.
+System Insights: I want dashboards for tracking patient engagement and system performance.
+5. Implementation Plan:
+Phase 1: General Healthcare Module
+Patient registration and appointment management.
+Integration with EHR systems for patient medical records.
+Telehealth setup for virtual consultations.
+Phase 2: Lifestyle Marketplace Module
+Build OmniScripts for service discovery and guided booking flows.
+Design FlexCards for personalized recommendations and service displays.
+Integration Procedures for third-party booking platforms and payment systems.
+Phase 3: Unified Dashboard & Reporting
+Provider dashboards for patient insights.
+Admin dashboards for system monitoring.
+Feedback and ratings integration for services.
+6. Technical Architecture Overview:
+Salesforce Health Cloud: Central repository for patient and health-related data.
+OmniStudio Components:
+OmniScripts: Guided patient flows for service discovery and booking.
+FlexCards: Display service recommendations, booking statuses, and provider suggestions.
+DataRaptors: Fetch health data and integrate with external systems.
+Integration Procedures: Enable booking and payment integrations.
+Salesforce Shield: Data encryption and compliance with healthcare regulations (e.g., HIPAA).
+Third-Party Integrations: Payment gateways (e.g., PayPal), wellness booking APIs.
+7. Expected Outcomes:
+Enhanced Patient Experience: Seamless booking of both healthcare and lifestyle services from a single platform.
+Preventive Care Adoption: Patients encouraged to adopt healthier lifestyles proactively.
+Improved Provider Insights: Healthcare providers gain better visibility into patient wellness engagement.
+Revenue Growth: Monetization opportunities through partnerships and exclusive service offerings.
+Improved Patient Satisfaction: Personalized care and wellness experiences build trust and loyalty.
+8. Key Metrics for Success:
+Increase in patient participation in wellness programs by 25% within the first quarter.
+Reduction in missed healthcare appointments by 15% through integrated reminders.
+Growth in platform revenue from wellness service bookings by 20% in six months.
+Positive patient satisfaction ratings for integrated healthcare and wellness services.
+9. Future Enhancements:
+AI & Analytics: AI-powered recommendations for services based on patient health trends.
+Wearable Integration: Data sync from fitness devices for real-time health monitoring.
+Mobile App Development: Enhanced accessibility and engagement via mobile applications.
+Loyalty Programs: Reward systems for active participation in wellness plans.
+Expanded Partnerships: Integration with global wellness platforms for broader service offerings.
+10. Conclusion:
+The General Healthcare + Patient Lifestyle Marketplace Integration bridges the gap between clinical healthcare and preventive wellness services. By leveraging Salesforce Health Cloud and OmniStudio, this solution offers a patient-centric approach to healthcare while driving long-term engagement and better health outcomes.
